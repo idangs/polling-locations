@@ -1,0 +1,628 @@
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>Circles</title>
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      #floating-panel {
+        position: absolute;
+        top: 10px;
+        left: 22%;
+        z-index: 2;
+        background-color: #fff;
+        padding: 2px;
+        border: 1px solid #999;
+      }
+
+      #legend {
+        padding: 2px;
+        top: 8px;
+        left: 9%;
+        margin: 5px;
+        font-size: 13px;
+        height: 120px;
+        width: 150px;
+        background-color: #fff;
+        font-family: Arial, sans-serif;
+
+      }
+
+      #legend p {
+        font-weight: bold;
+      }
+
+      #legend div {
+        padding-bottom: 5px;
+  
+      }
+
+      .color {
+        border: 1px solid;
+        height: 12px;
+        width: 12px;
+        margin-right: 3px;
+        float: left;
+      }
+    </style>
+    
+  </head>
+  <body>
+    <div id="floating-panel">
+      <input type="range" id="radiusSlider" onchange="changeRadius(radiusSlider.value);"  min="0" max="300" step="25">
+      <button onclick="number();">0 - 999</button>
+      <button onclick="numberi();">1000 - 1999</button>
+      <button onclick="numberii();">2000 - 2999</button>
+      <button onclick="numberiii();">3000 - 3999</button>
+       <button onclick="initMap();"> Display all</button>
+
+
+
+
+    </div>  
+    <div id="map"></div>
+    <script>
+
+      var legendTitle = 'population distribution';
+
+      var cityCirclev = [];
+
+      var cityCircle = [];
+      var a = 0;
+      var b = 0;
+      
+
+      var cityCirclei = [];
+      var d = 0;
+      var e = 0;
+      
+
+      var cityCircleii = [];
+      var i = 0;
+      var z = 0;
+      
+
+      var cityCircleiii = [];
+      var o = 0;
+      var p = 0;  
+
+      var styles = [
+        {
+          'min': 0,
+          'max': 999,
+          'color': '#0b5394'
+        },
+        {
+          'min': 1000,
+          'max': 1999,
+          'color': '#ff0000'
+        },
+        {
+          'min': 2000,
+          'max': 2999,
+          'color': '00ff00'
+        },
+        {
+          'min': 3000,
+          'max': 3999,
+          'color': '#EE77F3'
+        },
+      ];
+
+       //map with population less than 1000
+      var citymap = {
+        "ने.रा.प्रा.बि. जंगलीसिंहपुर्वा": {
+           center: {lat: 28.002367, lng: 81.652101},
+           population: 609 
+        },
+
+        "गाबिस भवन मनिकापुर": {
+           center: {lat: 28.1069976, lng: 81.661945},
+           population: 776
+        }, 
+
+        "पाटेश्वरी प्रा.वि. भुजईगाउँ": {
+           center: {lat: 28.082709, lng: 81.639258},
+           population: 908
+        },
+
+        "कृषि उपकेन्द्र, ढोडेगाउ": {
+           center: {lat: 28.0582, lng: 81.59768},
+           population: 853
+        },
+        
+
+      };
+
+      //Population less than 3000 and more than 2000
+      var citymapi = {
+        "जडिबुटी व्यवसायी संघको कार्यालय, पुरानो डिएसपीरोड": { 
+          center: {lat:  28.058736, lng: 81.631338},
+          population: 2063
+        },
+
+        "हडिया बाबाको मठ, रामनगर": { 
+          center: {lat:  28.056109,lng: 81.637002},
+          population: 2119
+        },
+
+        
+        "जिल्ला वन कार्यालय सुर्खेतरोड": {
+           center: {lat: 28.05977, lng: 81.618279},
+           population: 2688
+        },
+
+        "नेपालगंज नगरपालिका, कोरियनपुर्वा": {
+           center: {lat: 28.060594, lng: 81.618375},
+           population: 2732
+        },
+        
+        "हनुमान आ.वि. पिप्रहवा": {
+           center: {lat: 28.019835, lng: 81.61942},
+           population: 2062
+
+        },
+
+        
+        
+        "राष्टि्य माध्यमिक विद्यालय लग्दहवा": {
+           center: {lat: 28.090811, lng: 81.648944},
+           population: 2684
+        },
+        
+        "आदर्श मा.वि. राँझा": {  
+           center: {lat: 28.10116, lng: 81.661945},
+             population: 2607
+        },     
+         
+        
+        "महाराजा मा.बि. पुरैना": {
+           center: {lat: 28.05145, lng: 81.6487},
+           population: 2923
+        },
+        "हुक्कादास बाबाको कुटी": {
+           center: {lat: 28.036302, lng: 81.623355},
+           population: 2011
+        },
+        
+        
+
+      }; 
+
+
+
+      //Population less than 2000 and more than 1000
+      var citymapii = {
+        "ने.रा.प्रा.बि, घरवारीटोल": {
+          center: {lat: 28.063534, lng: 81.624582},
+          population: 1687
+        },
+        "पानीट्याङ्की, बागेश्वरी टोल": {
+          center: {lat: 28.054966, lng: 81.614425},
+          population: 1199
+        },
+        "ने.रा.प्रा.बि. रानीतलाउ": {
+          center: {lat: 28.056569, lng: 81.625807},
+          population: 1496
+        },
+      
+        "फत्तेह मुसाफिर खाना": {
+          center: {lat:  28.059094, lng: 81.625314},
+          population: 1240
+        },
+        "ने.रा. आ.वि कण्ठीपुर": {
+           center: {lat: 28.08128, lng: 81.66993},
+           population: 1470
+        },
+
+        "बसुदेबपुर मा.बि. फुटाहा": {
+           center: {lat: 28.075859, lng: 81.669128},
+           population: 1601
+        },
+
+        "इस्लामिक मदरसा, जैसपुर": {
+           center: {lat: 28.031588, lng: 81.601993},
+           population: 1790
+        },
+        "गाबिस भवन जैसपुर": {
+           center: {lat:28.0298, lng: 81.6037},
+           population: 1513
+        },
+        
+        "ज्ञानसागर मा.वि., परस्पुर": {
+           center: {lat: 28.0551, lng: 81.6064},
+           population: 1658
+        },
+        "अरुण ने.रा. मा.बि. उमारावसिह": { 
+           center: {lat: 28.05041, lng: 81.623853},
+           population: 1702
+        },
+
+        "रंगशाला कबडहल, बुलबुलिया": {
+           center: {lat: 28.051551, lng: 81.627421},
+           population: 1274
+        },
+        "मा.बि. भवानियापुर": { 
+           center: {lat: 28.030133, lng: 81.62},
+           population: 1779
+        },
+        "जय जनता मा.बि. थपुवा": {     
+           center: {lat: 28.12506, lng: 81.68563},
+           population: 1845
+        },
+        "नारायण मा.वि. सदरलाईन": {
+           center: {lat: 28.050678, lng: 81.618715},
+           population: 1716
+        },
+        "नेपाल खानेपानी स‌ंस्थान, शाखा कार्यालय नेपालगंज": {
+           center: {lat: 28.05607, lng: 81.62261},
+           population:  1578
+        },
+        "महेन्द्र मा.वि., रानीतलाउ": {
+          center: {lat:  28.056569, lng: 81.627807},
+          population: 1809
+        },
+
+        "नगरभवन, नाकाटोल":{
+          center: {lat:  28.058636, lng: 81.620398},
+          population: 1347
+        },
+        "म‌गल प्रसाद मा.वि., डि.एस.पि. रोड": {
+          center: {lat:  28.055524, lng: 81.627614},
+          population: 1395
+        }, 
+
+        "बालमन्दिर, बाँके बगिया": {
+           center: {lat:28.056629, lng: 81.612467},
+           population: 1922
+        },
+
+      }; 
+
+      //Population less than 4000 and more than 3000
+      var citymapiii = {
+        "धम्बोजी मा.वि., धम्बोजी": {
+          center: {lat: 28.077688, lng: 81.628627},
+          population: 3360
+        },
+        
+        "ने.रा. आ.वि सल्यानीबाग": {
+          center: {lat:  28.06058, lng: 81.63066},
+          population:  3981
+        },
+
+      };
+
+
+
+
+      function initMap(r = 100) {
+
+
+        // Create the map.
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 13,
+          center: {lat: 28.0548, lng:  81.6145},
+          mapTypeId: 'roadmap'
+        });
+
+        for (var city in citymapi) {
+
+        // Add the circle for this city to the map.
+          cityCirclei[d] = new google.maps.Circle({
+          strokeColor: '#00ff00',
+          strokeOpacity: 0.8,
+          strokeWeight: 2,
+          fillColor: '#00ff00',
+          fillOpacity: 0.35,
+          map: map,
+          center: citymapi[city].center,
+          radius: Math.sqrt(citymapi[city].population) * 24
+
+        });
+
+          d++;
+        }
+        d = 0;
+
+        for (var city in citymapii) {
+          // Add the circle for this city to the map.
+          cityCircleii[i] = new google.maps.Circle({
+          strokeColor: '#ff0000',
+          strokeOpacity: 0.8,
+          strokeWeight: 2,
+          fillColor: '#ff0000',
+          fillOpacity: 0.35,
+          map: map,
+          center: citymapii[city].center,
+          radius: Math.sqrt(citymapii[city].population) * 16
+        }); 
+
+          i++;
+          
+        }
+        i = 0;
+
+        for (var city in citymapiii) {
+          // Add the circle for this city to the map.
+          cityCircleiii[a] = new google.maps.Circle({
+          strokeColor: '#EE77F3',
+          strokeOpacity: 0.8,
+          strokeWeight: 2,
+          fillColor: '#EE77F3',
+          fillOpacity: 0.35,
+          map: map,
+          center: citymapiii[city].center,
+          radius: Math.sqrt(citymapiii[city].population) * 32
+        }); 
+
+          a++;
+          
+        }
+        a = 0;
+
+        for (var city in citymap) {
+          // Add the circle for this city to the map.
+          cityCircle[b] = new google.maps.Circle({
+          strokeColor: '#0b5394',
+          strokeOpacity: 0.8,
+          strokeWeight: 2,
+          fillColor: '#0b5394',
+          fillOpacity: 0.35,
+          map: map,
+          center: citymap[city].center,
+          radius: Math.sqrt(citymap[city].population) * 8
+        }); 
+
+          b++;
+          
+        }
+        b = 0;
+        var legend = document.createElement('div');
+        legend.id = 'legend';
+        legendContent(legend);
+        legend.index = 1;
+        map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(legend);
+      
+        changeRadius(r);
+      }
+
+      function legendContent(legend) {
+        var title = document.createElement('p');
+        title.innerHTML = legendTitle;
+        legend.appendChild(title);
+
+        for (var i in styles) {
+          var bucket = styles[i];
+
+          var legendItem = document.createElement('div');
+
+          var color = document.createElement('span');
+          color.setAttribute('class', 'color');
+          color.style.backgroundColor = bucket.color;
+          legendItem.appendChild(color);
+
+          var minMax = document.createElement('span');
+          minMax.innerHTML = bucket.min + ' to ' + bucket.max;
+          legendItem.appendChild(minMax);
+
+          legend.appendChild(legendItem);
+        }
+      }
+
+
+      function changeRadius(r) {
+        //alert("slided");
+        //alert(JSON.sringify(citymapii));
+        for (var city in citymapii) {
+          cityCircleii[z].set('radius', r * 4);
+          z++;    
+        }
+        z = 0;
+
+        for (var city in citymapi) {
+          cityCirclei[e].set('radius', r * 6);
+          e++;    
+        }
+        e = 0;
+
+        for (var city in citymap) {
+          cityCircle[o].set('radius', r * 2);
+          o++;    
+        }
+        o = 0;
+
+        for (var city in citymapiii) {
+          cityCircleiii[p].set('radius', r * 10);
+          p++;    
+        }
+        p = 0;
+      }
+
+
+      function number(r=100){
+        //alert(r);
+         var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 13,
+          center: {lat: 28.0548, lng:  81.6145},
+          mapTypeId: 'roadmap'
+        });
+
+        var legend = document.createElement('div');
+        legend.id = 'legend';
+        legendContent(legend);
+        legend.index = 1;
+        map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(legend);
+
+         b = 0;
+         for (var city in citymap) {
+          // Add the circle for this city to the map.
+          cityCircle[b] = new google.maps.Circle({
+          strokeColor: '#0b5394',
+          strokeOpacity: 0.8,
+          strokeWeight: 2,
+          fillColor: '#0b5394',
+          fillOpacity: 0.35,
+          map: map,
+          center: citymap[city].center,
+          radius: Math.sqrt(citymap[city].population) * 8
+        }); 
+
+          b++;
+
+      }
+
+      changeRadius(r);
+
+      b =0;
+
+      }
+
+      function numberii(r=100){
+        
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 13,
+          center: {lat: 28.0548, lng:  81.6145},
+          mapTypeId: 'roadmap'
+        });
+
+        var legend = document.createElement('div');
+        legend.id = 'legend';
+        legendContent(legend);
+        legend.index = 1;
+        map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(legend);
+
+        d = 0;
+
+        for (var city in citymapi) {
+
+        // Add the circle for this city to the map.
+          cityCirclei[d] = new google.maps.Circle({
+          strokeColor: '#00ff00',
+          strokeOpacity: 0.8,
+          strokeWeight: 2,
+          fillColor: '#00ff00',
+          fillOpacity: 0.35,
+          map: map,
+          center: citymapi[city].center,
+          radius: Math.sqrt(citymapi[city].population) * 24
+
+        });
+
+          d++;   
+
+      }
+       
+      changeRadius(r);
+
+      d = 0;
+
+      }
+
+      function numberi(r = 100){
+
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 13,
+          center: {lat: 28.0548, lng:  81.6145},
+          mapTypeId: 'roadmap'
+        });
+
+        var legend = document.createElement('div');
+        legend.id = 'legend';
+        legendContent(legend);
+        legend.index = 1;
+        map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(legend);
+
+        i = 0;
+        
+        
+        for (var city in citymapii) {
+          // Add the circle for this city to the map.
+          cityCircleii[i] = new google.maps.Circle({
+          strokeColor: '#ff0000',
+          strokeOpacity: 0.8,
+          strokeWeight: 2,
+          fillColor: '#ff0000',
+          fillOpacity: 0.35,
+          map: map,
+          center: citymapii[city].center,
+          radius: Math.sqrt(citymapii[city].population) * 16 
+        }); 
+
+          i++;
+          
+        }
+
+        
+        changeRadius(r);
+        i = 0;
+
+
+      }
+
+
+      function numberiii(r = 100){
+
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 13,
+          center: {lat: 28.0548, lng:  81.6145},
+          mapTypeId: 'roadmap'
+        });
+
+        var legend = document.createElement('div');
+        legend.id = 'legend';
+        legendContent(legend);
+        legend.index = 1;
+        map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(legend);
+         
+        a = 0;
+         
+        for (var city in citymapiii) {
+          // Add the circle for this city to the map.
+          cityCircleiii[a] = new google.maps.Circle({
+          strokeColor: '#EE77F3',
+          strokeOpacity: 0.8,
+          strokeWeight: 2,
+          fillColor: '#EE77F3',
+          fillOpacity: 0.35,
+          map: map,
+          center: citymapiii[city].center,
+          radius: Math.sqrt(citymapiii[city].population) * 32
+        }); 
+
+          a++;
+          
+        }
+
+       
+
+        changeRadius(r);
+        a = 0;
+
+
+      }
+
+
+
+
+
+      google.maps.event.addDomListener(window, 'load', initialize);
+
+
+    </script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDNhDa5yHMH8u1ngq2815I0vvEHlEp_h1g&callback=initMap">
+    </script>
+  </body>
+</html>
+    
